@@ -108,6 +108,9 @@ public class OAuthAuthorizationServlet extends HttpServlet {
     private final static String EXPIRES_IN = "expires_in";
     private final static String DEVICE_ID = "device_id";
 
+    private final static String TOKEN_TYPE = "token_type";
+    private final static String TOKEN_TYPE_VALUE = "Bearer";
+
     private final static String INVALID_GRANT = "invalid_grant";
     private static final String REFRESH_TOKEN_DOESN_T_MATCH = "refresh token doesn't match";
     private static final String CREDENTIALS_OR_REDIRECT_URI_DON_T_MATCH = "credentials or redirect_uri don't match";
@@ -250,8 +253,9 @@ public class OAuthAuthorizationServlet extends HttpServlet {
 
         JsonObject jsonResponse = new JsonObject();
         jsonResponse.addProperty(ACCESS_TOKEN, newAccessToken);
+        jsonResponse.addProperty(REFRESH_TOKEN, refreshToken);
+        jsonResponse.addProperty(TOKEN_TYPE, TOKEN_TYPE_VALUE);
         jsonResponse.addProperty(EXPIRES_IN, OAuthProperties.getConfiguration().getAccessTokenExpirationSeconds());
-
         sendOAuthResponse(response, Status.OK, jsonResponse);
     }
 
@@ -333,6 +337,7 @@ public class OAuthAuthorizationServlet extends HttpServlet {
             JsonObject jsonResponse = new JsonObject();
             jsonResponse.addProperty(ACCESS_TOKEN, accessToken);
             jsonResponse.addProperty(REFRESH_TOKEN, refreshToken);
+            jsonResponse.addProperty(TOKEN_TYPE, TOKEN_TYPE_VALUE);
             jsonResponse.addProperty(EXPIRES_IN, OAuthProperties.getConfiguration().getAccessTokenExpirationSeconds());
             sendOAuthResponse(response, Status.OK, jsonResponse);
         } else {
