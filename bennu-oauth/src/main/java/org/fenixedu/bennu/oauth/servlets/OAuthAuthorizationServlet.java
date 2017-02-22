@@ -349,24 +349,22 @@ public class OAuthAuthorizationServlet extends HttpServlet {
     private void handleUserDialog(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String clientId = request.getParameter(CLIENT_ID);
         String redirectUrl = request.getParameter(REDIRECT_URI);
-        String state = null;
-        if (!Strings.isNullOrEmpty(request.getParameter(STATE))) {
-            state = Base64.getEncoder().encodeToString(request.getParameter(STATE).getBytes(StandardCharsets.UTF_8));
-        }
+        String originalState = request.getParameter(STATE);
+
         User user = Authenticate.getUser();
 
         if (!Strings.isNullOrEmpty(clientId) && !Strings.isNullOrEmpty(redirectUrl)) {
             if (user == null) {
                 String cookieValue = clientId + "|" + redirectUrl;
-                if (state != null) {
-                    cookieValue += "|" + state;
+                if (originalState != null) {
+                    cookieValue += "|" + Base64.getEncoder().encodeToString(originalState.getBytes(StandardCharsets.UTF_8));
                 }
                 response.addCookie(new Cookie(OAUTH_SESSION_KEY, Base64.getEncoder().encodeToString(cookieValue.getBytes())));
                 response.sendRedirect(request.getContextPath() + "/login?callback="
                         + CoreConfiguration.getConfiguration().applicationUrl() + "/oauth/userdialog");
                 return;
             } else {
-                redirectToRedirectUrl(request, response, user, clientId, redirectUrl, state);
+                redirectToRedirectUrl(request, response, user, clientId, redirectUrl, originalState);
                 return;
             }
         } else {
