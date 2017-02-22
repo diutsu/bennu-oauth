@@ -456,8 +456,10 @@ public class OAuthAuthorizationServlet extends HttpServlet {
 
         String clientApplicationId = values[0];
         String redirectUrl = values[1];
-        String state = new String(Base64.getDecoder().decode(values[2]));
-
+        String state = null;
+        if( values.length>=2 && !Strings.isNullOrEmpty(values[2])) {
+             state = new String(Base64.getDecoder().decode(values[2]));
+        }
         redirectToRedirectUrl(request, response, user, clientApplicationId, redirectUrl, state);
     }
 
